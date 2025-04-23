@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,6 +8,10 @@ const Rinjani = () => {
     const [showPoem, setShowPoem] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const navigate = useNavigate();
+    const audioRef = useRef(null);
+
+    // Replace this with your actual music file path
+    const musicSrc = "bub11.mp3";
 
     const poemText = [
         "Kamu adalah Rinjani, nada yang indah dalam simfoni hidupku. Wajahmu seperti bulan purnama, menerangi hari-hariku.",
@@ -27,9 +31,41 @@ const Rinjani = () => {
         { id: 9, src: "bub9.jpg", alt: "Rinjani breeze", praise: "Hadirnya kamu seperti angin Rinjani yang sejuk, menyentuh jiwa dengan lembut" }
     ];
 
+    // Music player controls
+    useEffect(() => {
+        // Create audio element when component mounts
+        audioRef.current = new Audio(musicSrc);
+        audioRef.current.loop = true;
+
+        // Cleanup function to stop and remove audio when component unmounts
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current = null;
+            }
+        };
+    }, [musicSrc]);
+
     // Function to toggle music playing state
     const toggleMusic = () => {
+        if (isPlaying) {
+            audioRef.current.pause();
+        } else {
+            audioRef.current.play().catch(error => {
+                console.error("Audio playback failed:", error);
+                // Handle autoplay restrictions by showing a user interaction required message
+                alert("Klik sekali lagi untuk memutar musik");
+            });
+        }
         setIsPlaying(!isPlaying);
+    };
+
+    // Volume control
+    const handleVolumeChange = (e) => {
+        const volume = e.target.value;
+        if (audioRef.current) {
+            audioRef.current.volume = volume;
+        }
     };
 
     const backgroundVariants = {
@@ -264,7 +300,7 @@ const Rinjani = () => {
                     <span className="text-xl">💝</span>
                 </motion.button>
 
-                {/* New Music Button with animation */}
+                {/* Enhanced Music Button with animation */}
                 <motion.button
                     className={`bg-gradient-to-r ${isPlaying ? 'from-purple-500 to-pink-600' : 'from-pink-500 to-purple-600'} text-white font-bold py-3 px-6 rounded-full flex items-center gap-3 shadow-xl border-2 border-pink-200 relative overflow-hidden`}
                     onClick={toggleMusic}
@@ -320,6 +356,30 @@ const Rinjani = () => {
                     )}
                 </motion.button>
             </motion.div>
+
+            {/* Volume control slider (only shown when music is playing) */}
+            <AnimatePresence>
+                {isPlaying && (
+                    <motion.div
+                        className="mb-6 flex items-center gap-3 bg-white bg-opacity-50 px-4 py-2 rounded-full shadow-md"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                    >
+                        <span className="text-pink-900">🔈</span>
+                        <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            defaultValue="0.5"
+                            onChange={handleVolumeChange}
+                            className="w-24 accent-pink-500"
+                        />
+                        <span className="text-pink-900">🔊</span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <motion.p
                 className="text-pink-900 text-lg sm:text-xl text-center max-w-2xl mb-8 sm:mb-12"
