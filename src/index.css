@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+
+body {
+  font-family: 'Playfair Display', serif;
+  background: linear-gradient(135deg, #fce7e9 0%, #e4c1d9 100%);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.letter-container {
+  perspective: 1200px;
+}
+
+.letter-front,
+.letter-back {
+  backfaceVisibility: hidden;
+}
+
+.font-roboto {
+  font-family: 'Roboto', sans-serif;
+}
+
+.font-playfair {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Vignette effect */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at center, transparent 60%, rgba(0, 0, 0, 0.3) 100%);
+  z-index: -1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .letter-container {
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 640px) {
+  .letter-container {
+    transform: scale(0.8);
+  }
+}
+
+@media (max-width: 480px) {
+  .letter-container {
+    transform: scale(0.7);
+  }
+  h1 {
+    font-size: 2.25rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .letter-container {
+    transform: scale(0.65);
+  }
+  h1 {
+    font-size: 1.75rem;
+  }
+}
